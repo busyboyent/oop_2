@@ -2,13 +2,10 @@ package gui;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 
 import javax.swing.*;
 
-import jdk.jshell.spi.ExecutionControl;
 import log.Logger;
 
 /**
@@ -42,7 +39,10 @@ public class MainApplicationFrame extends JFrame
         addWindow(gameWindow);
 
         setJMenuBar(generateMenuBar());
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        this.addWindowListener(new WindowAdapter() {public void windowClosing(WindowEvent we) {
+            close(); }});
+
     }
 
     protected LogWindow createLogWindow()
@@ -117,7 +117,7 @@ public class MainApplicationFrame extends JFrame
                     (event) -> {Logger.debug("Новая строка");});
             testMenu.add(addLogMessageItem);
 
-            var exit = createJMenuItem("Выход", KeyEvent.VK_E, (event) ->{ temp();
+            var exit = createJMenuItem("Выход", KeyEvent.VK_E, (event) -> { close();
 
             });
             programMenu.add(exit);
@@ -130,11 +130,11 @@ public class MainApplicationFrame extends JFrame
         return menuBar;
     }
 
-    private void temp(){
+    private void close(){
         UIManager.put("OptionPane.yesButtonText"   , "Да"    );
         UIManager.put("OptionPane.noButtonText"    , "Нет"   );
         var result = JOptionPane.showConfirmDialog(this,
-                "Вы УВЕРЕНЫ?",
+                "Вы Уверены?",
                 "ОКНО ВЫХОДА",
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.WARNING_MESSAGE);
