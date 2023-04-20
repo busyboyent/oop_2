@@ -2,18 +2,13 @@ package gui;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
-import javax.swing.JDesktopPane;
-import javax.swing.JFrame;
-import javax.swing.JInternalFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.*;
 
+import jdk.jshell.spi.ExecutionControl;
 import log.Logger;
 
 /**
@@ -96,57 +91,63 @@ public class MainApplicationFrame extends JFrame
 //        return menuBar;
 //    }
 
-
-
     private JMenuBar generateMenuBar()
     {
         JMenuBar menuBar = new JMenuBar();
 
+
         var lookAndFeelMenu = createJMenu("Режим отображения",
                 KeyEvent.VK_V, "Управление режимом отображения приложения");
-
-        //возможно, фигурные скобонькидля того, чтобы одна из ссылок удалилась из-за выхода из блока.
-        //т.е. у нас две ссылки у переменной и у jменю, и переменная нам больше не нужна
-        {
-            var systemLookAndFeel = createJMenuItemForLookAndFeelMenu("Системная схема", KeyEvent.VK_S);
-            lookAndFeelMenu.add(systemLookAndFeel);
-        }
-
-        {
-            var crossplatformLookAndFeel = createJMenuItemForLookAndFeelMenu("Универсальная схема", KeyEvent.VK_S);
-            lookAndFeelMenu.add(crossplatformLookAndFeel);
-        }
-
         var testMenu = createJMenu("Тесты", KeyEvent.VK_T, "Тестовые команды");
+        var programMenu = createJMenu("Программа", KeyEvent.VK_B, "Помощь");
         {
-            var addLogMessageItem = createJMenuItemForTestMenu("Сообщение в лог", KeyEvent.VK_S, "Новая строка");
+            var systemLookAndFeel = createJMenuItem("Системная схема", KeyEvent.VK_S,
+                    (event) -> {
+                        setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                        this.invalidate(); });
+            lookAndFeelMenu.add(systemLookAndFeel);
+
+            var crossplatformLookAndFeel = createJMenuItem("Универсальная схема", KeyEvent.VK_S,
+                    (event) -> {
+                        setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+                        this.invalidate();});
+            lookAndFeelMenu.add(crossplatformLookAndFeel);
+
+            var addLogMessageItem = createJMenuItem("Сообщение в лог", KeyEvent.VK_S,
+                    (event) -> {Logger.debug("Новая строка");});
             testMenu.add(addLogMessageItem);
+
+            var exit = createJMenuItem("Выход", KeyEvent.VK_E, (event) ->{ temp();
+
+            });
+            programMenu.add(exit);
         }
 
+        menuBar.add(programMenu);
         menuBar.add(lookAndFeelMenu);
         menuBar.add(testMenu);
+
         return menuBar;
     }
 
-
-    private JMenuItem createJMenuItemForLookAndFeelMenu(String text, int mnemonic){
-        var jMenuItem = new JMenuItem(text, mnemonic);
-        jMenuItem.addActionListener((event) -> {
-            setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            this.invalidate(); });
-
-        return jMenuItem;
+    private void temp(){
+        UIManager.put("OptionPane.yesButtonText"   , "Да"    );
+        UIManager.put("OptionPane.noButtonText"    , "Нет"   );
+        var result = JOptionPane.showConfirmDialog(this,
+                "Вы УВЕРЕНЫ?",
+                "ОКНО ВЫХОДА",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE);
+        if(result == JOptionPane.YES_OPTION){
+            System.exit(0);
+        }
     }
 
-
-    private JMenuItem createJMenuItemForTestMenu(String text, int mnemonic, String strMessage){
+    private JMenuItem createJMenuItem(String text, int mnemonic, ActionListener action){
         var jMenuItem = new JMenuItem(text, mnemonic);
-        jMenuItem.addActionListener((event) -> {
-            Logger.debug(strMessage);
-        });
+        jMenuItem.addActionListener(action);
         return jMenuItem;
     }
-
 
     private JMenu createJMenu(String menuName, int mnemonic, String accessibleDescription){
         var jmenu = new JMenu(menuName);

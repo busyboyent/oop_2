@@ -7,6 +7,7 @@ public class Robot {
     private double X;
     private double Y;
     private double direction;
+    private double velocity;
 
     private static final double maxVelocity = 0.1;
     private static final double maxAngularVelocity = 0.001;
@@ -38,10 +39,10 @@ public class Robot {
         Y = y;
     }
 
-    public void move(double duration, int targetX, int targetY)
+    public void move(double duration, int targetX, int targetY, double distance)
     {
-        var velocity = maxVelocity;
-        var angularVelocity = getAngularVelocity(targetX, targetY);
+        velocity = maxVelocity;
+        var angularVelocity = getAngularVelocity(targetX, targetY, distance);
         double newX = X + maxVelocity / angularVelocity *
                 (Math.sin(direction  + angularVelocity * duration) -
                         Math.sin(direction));
@@ -61,17 +62,23 @@ public class Robot {
         direction = asNormalizedRadians(direction + angularVelocity * duration);
     }
 
-    private double getAngularVelocity(int targetX, int targetY){
+    private double getAngularVelocity(int targetX, int targetY, double distance){
 
         double angleToTarget = angleTo(X, Y, targetX, targetY);
         double angularVelocity = 0;
-        if (angleToTarget > direction)
+        var angleFromTargetToRobot = asNormalizedRadians(angleToTarget - direction);
+
+        if (angleFromTargetToRobot > Math.PI)
+        {
+            angularVelocity = -maxAngularVelocity;
+        }
+        else if (angleFromTargetToRobot < Math.PI)
         {
             angularVelocity = maxAngularVelocity;
         }
-        if (angleToTarget < direction)
-        {
-            angularVelocity = -maxAngularVelocity;
+
+        if (Math.abs(angleFromTargetToRobot) >= 0.1){
+            velocity = angularVelocity * distance/2;
         }
         return applyLimits(angularVelocity, -maxAngularVelocity, maxAngularVelocity);
     }
