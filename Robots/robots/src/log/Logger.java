@@ -6,7 +6,7 @@ public final class Logger
     static {
         defaultLogSource = new LogWindowSource(100);
     }
-    
+
     private Logger()
     {
     }
@@ -15,7 +15,7 @@ public final class Logger
     {
         defaultLogSource.append(LogLevel.Debug, strMessage);
     }
-    
+
     public static void error(String strMessage)
     {
         defaultLogSource.append(LogLevel.Error, strMessage);
