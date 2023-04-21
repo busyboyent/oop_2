@@ -3,10 +3,15 @@ package gui;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.*;
+import java.io.File;
+import java.io.FileNotFoundException;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
+import jdk.jshell.spi.ExecutionControl;
 import log.Logger;
+import primitives.IRobot;
 
 /**
  * Что требуется сделать:
@@ -17,7 +22,7 @@ import log.Logger;
 public class MainApplicationFrame extends JFrame
 {
     private final JDesktopPane desktopPane = new JDesktopPane();
-
+    private GameWindow gameWindow;
     public MainApplicationFrame() {
         //Make the big window be indented 50 pixels from each edge
         //of the screen.
@@ -34,7 +39,7 @@ public class MainApplicationFrame extends JFrame
         LogWindow logWindow = createLogWindow();
         addWindow(logWindow);
 
-        GameWindow gameWindow = new GameWindow();
+        gameWindow = new GameWindow();
         gameWindow.setSize(400,  400);
         addWindow(gameWindow);
 
@@ -62,39 +67,9 @@ public class MainApplicationFrame extends JFrame
         frame.setVisible(true);
     }
 
-//    protected JMenuBar createMenuBar() {
-//        JMenuBar menuBar = new JMenuBar();
-//
-//        //Set up the lone menu.
-//        JMenu menu = new JMenu("Document");
-//        menu.setMnemonic(KeyEvent.VK_D);
-//        menuBar.add(menu);
-//
-//        //Set up the first menu item.
-//        JMenuItem menuItem = new JMenuItem("New");
-//        menuItem.setMnemonic(KeyEvent.VK_N);
-//        menuItem.setAccelerator(KeyStroke.getKeyStroke(
-//                KeyEvent.VK_N, ActionEvent.ALT_MASK));
-//        menuItem.setActionCommand("new");
-////        menuItem.addActionListener(this);
-//        menu.add(menuItem);
-//
-//        //Set up the second menu item.
-//        menuItem = new JMenuItem("Quit");
-//        menuItem.setMnemonic(KeyEvent.VK_Q);
-//        menuItem.setAccelerator(KeyStroke.getKeyStroke(
-//                KeyEvent.VK_Q, ActionEvent.ALT_MASK));
-//        menuItem.setActionCommand("quit");
-////        menuItem.addActionListener(this);
-//        menu.add(menuItem);
-//
-//        return menuBar;
-//    }
-
     private JMenuBar generateMenuBar()
     {
         JMenuBar menuBar = new JMenuBar();
-
 
         var lookAndFeelMenu = createJMenu("Режим отображения",
                 KeyEvent.VK_V, "Управление режимом отображения приложения");
@@ -117,10 +92,13 @@ public class MainApplicationFrame extends JFrame
                     (event) -> {Logger.debug("Новая строка");});
             testMenu.add(addLogMessageItem);
 
-            var exit = createJMenuItem("Выход", KeyEvent.VK_E, (event) -> { close();
-
+            var exit = createJMenuItem("Выход", KeyEvent.VK_E, (event) ->{ close();
             });
             programMenu.add(exit);
+
+            var addRobotLogic = createJMenuItem("Загрузить логику робота", KeyEvent.VK_L,
+                    (event) -> {chooseFile();});
+            programMenu.add(addRobotLogic);
         }
 
         menuBar.add(programMenu);
@@ -128,6 +106,18 @@ public class MainApplicationFrame extends JFrame
         menuBar.add(testMenu);
 
         return menuBar;
+    }
+
+    private void chooseFile(){
+        var chooser = new JFileChooser();
+        var filter = new FileNameExtensionFilter("Description", "class");
+        chooser.setFileFilter(filter);
+        var result = chooser.showDialog(null, "Загрузить логику бота");
+        if (result == JFileChooser.APPROVE_OPTION){
+            var file = chooser.getSelectedFile();
+            var path = file.getPath();
+
+        }
     }
 
     private void close(){

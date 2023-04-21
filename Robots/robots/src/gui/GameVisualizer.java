@@ -1,5 +1,7 @@
 package gui;
 
+import primitives.DefaultRobot;
+import primitives.IRobot;
 import primitives.Robot;
 import primitives.Target;
 
@@ -21,7 +23,7 @@ public class GameVisualizer extends JPanel
         return timer;
     }
 
-    private Robot robot = new Robot(100, 100);
+    private IRobot robot = new DefaultRobot(50, 50);
     private Target target = new Target(150, 100);
 
     public GameVisualizer()
@@ -54,6 +56,9 @@ public class GameVisualizer extends JPanel
         setDoubleBuffered(true);
     }
 
+    public void setRobot(IRobot robot) {
+        this.robot = robot;
+    }
 
     protected void onRedrawEvent()
     {

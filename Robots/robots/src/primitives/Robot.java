@@ -2,7 +2,7 @@ package primitives;
 
 import static tools.Helper.asNormalizedRadians;
 
-public class Robot {
+public class Robot implements IRobot{
 
     private double X;
     private double Y;
@@ -76,10 +76,10 @@ public class Robot {
         {
             angularVelocity = maxAngularVelocity;
         }
-
-        if (Math.abs(angleFromTargetToRobot) >= 0.1){
+        if (Math.abs(angleFromTargetToRobot) < 0.1)
+            velocity = maxVelocity;
+        else
             velocity = angularVelocity * distance/2;
-        }
         return applyLimits(angularVelocity, -maxAngularVelocity, maxAngularVelocity);
     }
 
