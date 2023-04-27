@@ -7,5 +7,5 @@ import java.io.ObjectOutputStream;
 public interface SerializableFrame
 {
     void serialize(ObjectOutputStream stream) throws IOException;
-    void restore(ObjectInputStream stream);
+    FrameState restore(ObjectInputStream stream) throws IOException, ClassNotFoundException;
 }

@@ -1,21 +1,21 @@
 package gui;
 
-import primitives.DefaultRobot;
-import primitives.IRobot;
-import primitives.Robot;
-import primitives.Target;
-
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class GameVisualizer extends JPanel
-{
+import javax.swing.JPanel;
+
+public class GameVisualizer extends JPanel {
     private final Timer m_timer = initTimer();
+    private GameModel gameModel;
+    private double robotX;
+    private double robotY;
 
     private static Timer initTimer()
     {
@@ -23,11 +23,9 @@ public class GameVisualizer extends JPanel
         return timer;
     }
 
-    private IRobot robot = new DefaultRobot(50, 50);
-    private Target target = new Target(150, 100);
-
-    public GameVisualizer()
+    public GameVisualizer(GameModel model)
     {
+        gameModel=model;
         m_timer.schedule(new TimerTask()
         {
             @Override
@@ -41,47 +39,34 @@ public class GameVisualizer extends JPanel
             @Override
             public void run()
             {
-                onModelUpdateEvent();
+                gameModel.onModelUpdateEvent();
             }
         }, 0, 10);
+
         addMouseListener(new MouseAdapter()
         {
             @Override
             public void mouseClicked(MouseEvent e)
             {
-                target.setTargetPosition(e.getPoint());
+                setTargetPosition(e.getPoint());
                 repaint();
             }
         });
         setDoubleBuffered(true);
     }
 
-    public void setRobot(IRobot robot) {
-        this.robot = robot;
+    protected void setTargetPosition(Point p)
+    {
+        gameModel.setTargetPosition(p);
     }
 
     protected void onRedrawEvent()
     {
         EventQueue.invokeLater(this::repaint);
+//        Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(new ));
     }
 
-    private static double distance(double x1, double y1, double x2, double y2)
-    {
-        double diffX = x1 - x2;
-        double diffY = y1 - y2;
-        return Math.sqrt(diffX * diffX + diffY * diffY);
-    }
 
-    protected void onModelUpdateEvent()
-    {
-        double distance = distance(target.getX(), target.getY(),
-                robot.getX(), robot.getY());
-        if (distance < 0.5)
-        {
-            return;
-        }
-        robot.move(10, target.getX(), target.getY(), distance);
-    }
 
     private static int round(double value)
     {
@@ -93,8 +78,8 @@ public class GameVisualizer extends JPanel
     {
         super.paint(g);
         Graphics2D g2d = (Graphics2D)g;
-        drawRobot(g2d, round(robot.getX()), round(robot.getY()), robot.getDirection());
-        drawTarget(g2d, target.getX(), target.getY());
+        drawRobot(g2d, round(gameModel.getRobotPositionX()), round(gameModel.getRobotPositionY()), gameModel.getRobotDirection());
+        drawTarget(g2d, gameModel.getTargetPositionX(), gameModel.getTargetPositionY());
     }
 
     private static void fillOval(Graphics g, int centerX, int centerY, int diam1, int diam2)
@@ -109,8 +94,8 @@ public class GameVisualizer extends JPanel
 
     private void drawRobot(Graphics2D g, int x, int y, double direction)
     {
-        int robotCenterX = round(robot.getX());
-        int robotCenterY = round(robot.getY());
+        int robotCenterX = round(gameModel.getRobotPositionX());
+        int robotCenterY = round(gameModel.getRobotPositionY());
         AffineTransform t = AffineTransform.getRotateInstance(direction, robotCenterX, robotCenterY);
         g.setTransform(t);
         g.setColor(Color.MAGENTA);
