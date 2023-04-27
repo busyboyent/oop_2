@@ -7,7 +7,6 @@ import java.util.Observer;
 
 public class PositionWindow extends JInternalFrame implements Observer
 {
-    //    private final GameVisualizer visualizer;
     private GameModel gameModel;
     private JLabel xLabel;
     private JLabel yLabel;
@@ -20,23 +19,23 @@ public class PositionWindow extends JInternalFrame implements Observer
         gameModel.addObserver(this);
         xLabel = new JLabel();
         xLabel.setLocation(50,10);
-        xLabel.setSize(50,20);
+        xLabel.setSize(100,20);
         xLabel.setText("xLabel");
 
         yLabel = new JLabel();
         yLabel.setLocation(50,40);
-        yLabel.setSize(50,20);
+        yLabel.setSize(100,20);
         yLabel.setText("yLabel");
 
         angleLabel = new JLabel();
         angleLabel.setLocation(50,70);
-        angleLabel.setSize(50,20);
+        angleLabel.setSize(100,20);
         angleLabel.setText("angleLabel");
 
         JPanel panel = new JPanel(new BorderLayout());
-        panel.add(xLabel,BorderLayout.NORTH);
-        panel.add(yLabel,BorderLayout.CENTER);
-        panel.add(angleLabel,BorderLayout.SOUTH);
+        panel.add(xLabel);
+        panel.add(yLabel);
+        panel.add(angleLabel);
         getContentPane().add(panel);
         pack();
     }
