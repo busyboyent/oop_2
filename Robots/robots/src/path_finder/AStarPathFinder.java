@@ -1,13 +1,13 @@
-package path;
+package path_finder;
 
 import gui.GameModel;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.TreeSet;
 
-public class AStarPathFinder extends AbstractPathFinder
+public class AStarPathFinder extends AbstractPathFinder implements Serializable
 {
     public AStarPathFinder(Map map)
     {
@@ -35,7 +35,7 @@ public class AStarPathFinder extends AbstractPathFinder
             MapCell current = list.get(0);
             if (current.equals(finish))
                 return getPath(current);
-            Iterable<MapCell> neighbours = getNeighbours(current);
+            Iterable<MapCell> neighbours = getNeighbours(current,false);
             for (MapCell neighbour : neighbours)
             {
                 if (closed.contains(neighbour))

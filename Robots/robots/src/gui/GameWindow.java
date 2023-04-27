@@ -8,20 +8,20 @@ import javax.swing.JPanel;
 public class GameWindow extends JInternalFrame
 {
     private final GameVisualizer m_visualizer;
-    private final GameModel gameModel;
+
+    private GameModel gameModel;
+
     public GameWindow(MainApplicationFrame frame)
     {
         super("Игровое поле", true, true, true, true);
         gameModel=new GameModel();
         m_visualizer = new GameVisualizer(gameModel);
-//        gameModel =new GameModel(m_visualizer);
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(m_visualizer, BorderLayout.CENTER);
         getContentPane().add(panel);
         pack();
         createCoordinatesWindow(frame);
     }
-
     private void createCoordinatesWindow(MainApplicationFrame frame)
     {
         PositionWindow posWindow = new PositionWindow(gameModel);
@@ -36,7 +36,13 @@ public class GameWindow extends JInternalFrame
 
     public void setState(InternalFrameState state)
     {
-        setLocation(state.attributes.get("x"),state.attributes.get("y"));
-        setSize(state.attributes.get("width"),state.attributes.get("height"));
+        setLocation((int)state.attributes.get("x"),(int)state.attributes.get("y"));
+        setSize((int)state.attributes.get("width"),(int)state.attributes.get("height"));
+        m_visualizer.setGameModel((GameModel)state.attributes.get("model"));
+    }
+
+    public GameModel getGameModel()
+    {
+        return gameModel;
     }
 }

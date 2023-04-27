@@ -1,11 +1,12 @@
-package path;
+package path_finder;
 
 import gui.Obstacle;
 
 import java.awt.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Map
+public class Map implements Serializable
 {
     private MapCell[][] mapArray;
     public final int Width;
@@ -39,8 +40,8 @@ public class Map
             int upperLeftCol = getColumn(obstacle.getX());
             int lowerRightRow = getRow(obstacle.getY() + obstacle.getHeight());
             int lowerRightCol = getColumn(obstacle.getX() + obstacle.getWidth());
-            for (int row = upperLeftRow; row <= lowerRightRow; row++)
-                for (int col = upperLeftCol; col <= lowerRightCol; col++)
+            for (int row = upperLeftRow; row < lowerRightRow; row++)
+                for (int col = upperLeftCol; col < lowerRightCol; col++)
                     mapArray[row][col].setObstacle(true);
         }
     }
@@ -57,14 +58,12 @@ public class Map
 
     private int getRow(double y)
     {
-        int row = (int) Math.floor(y / MapCell.Size);
-        return row;
+        return (int) Math.floor(y / MapCell.Size);
     }
 
     private int getColumn(double x)
     {
-        int column = (int) Math.floor(x / MapCell.Size);
-        return column;
+        return (int) Math.floor(x / MapCell.Size);
     }
 
     public MapCell getCellFromCoords(double x, double y)
