@@ -6,6 +6,6 @@ import java.io.ObjectOutputStream;
 
 public interface SerializableFrame
 {
-    void serialize(ObjectOutputStream stream) throws IOException;
-    FrameState restore(ObjectInputStream stream) throws IOException, ClassNotFoundException;
+  void serialize(ObjectOutputStream stream) throws IOException;
+  FrameState restore(ObjectInputStream stream) throws IOException, ClassNotFoundException;
 }
