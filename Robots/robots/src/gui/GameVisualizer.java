@@ -13,137 +13,137 @@ import javax.swing.*;
 
 public class GameVisualizer extends JPanel
 {
-    public GameModel getGameModel()
-    {
-        return gameModel;
-    }
+  public GameModel getGameModel()
+  {
+    return gameModel;
+  }
 
-    public void setGameModel(GameModel gameModel)
-    {
-        this.gameModel = gameModel;
-    }
+  public void setGameModel(GameModel gameModel)
+  {
+    this.gameModel = gameModel;
+  }
 
-    private GameModel gameModel;
-    private double robotX;
-    private double robotY;
+  private GameModel gameModel;
+  private double robotX;
+  private double robotY;
 
-    private static Timer initTimer()
-    {
-        return new Timer("events generator", true);
-    }
+  private static Timer initTimer()
+  {
+    return new Timer("events generator", true);
+  }
 
-    public GameVisualizer(GameModel model)
+  public GameVisualizer(GameModel model)
+  {
+    gameModel = model;
+    Timer m_timer = initTimer();
+    m_timer.schedule(new TimerTask()
     {
-        gameModel = model;
-        Timer m_timer = initTimer();
-        m_timer.schedule(new TimerTask()
+      @Override
+      public void run()
+      {
+        onRedrawEvent();
+      }
+    }, 0, 50);
+    m_timer.schedule(new TimerTask()
+    {
+      @Override
+      public void run()
+      {
+        gameModel.onModelUpdateEvent();
+      }
+    }, 0, 10);
+
+    addMouseListener(new MouseAdapter()
+    {
+      @Override
+      public void mouseClicked(MouseEvent e)
+      {
+        if (SwingUtilities.isLeftMouseButton(e))
         {
-            @Override
-            public void run()
-            {
-                onRedrawEvent();
-            }
-        }, 0, 50);
-        m_timer.schedule(new TimerTask()
-        {
-            @Override
-            public void run()
-            {
-                gameModel.onModelUpdateEvent();
-            }
-        }, 0, 10);
-
-        addMouseListener(new MouseAdapter()
-        {
-            @Override
-            public void mouseClicked(MouseEvent e)
-            {
-                if (SwingUtilities.isLeftMouseButton(e))
-                {
-                    gameModel.setBounds(getSize());
-                    setTargetPosition(e.getPoint());
-                }
-                else if (SwingUtilities.isRightMouseButton(e))
-                    gameModel.AddObstacle(getSize());
-                repaint();
-            }
-        });
-        setDoubleBuffered(true);
-    }
-
-    protected void setTargetPosition(Point p)
-    {
-        gameModel.setTargetPosition(p);
-    }
-
-    protected void onRedrawEvent()
-    {
-        EventQueue.invokeLater(this::repaint);
-    }
-
-
-    private static int round(double value)
-    {
-        return (int) (value + 0.5);
-    }
-
-    @Override
-    public void paint(Graphics g)
-    {
-        super.paint(g);
-        Graphics2D g2d = (Graphics2D) g;
-        drawRobot(g2d, round(gameModel.getRobotPositionX()), round(gameModel.getRobotPositionY()), gameModel.getRobotDirection());
-        drawTarget(g2d, gameModel.getTargetPositionX(), gameModel.getTargetPositionY());
-        drawObstacles(g2d);
-    }
-
-    private static void fillOval(Graphics g, int centerX, int centerY, int diam1, int diam2)
-    {
-        g.fillOval(centerX - diam1 / 2, centerY - diam2 / 2, diam1, diam2);
-    }
-
-    private static void drawOval(Graphics g, int centerX, int centerY, int diam1, int diam2)
-    {
-        g.drawOval(centerX - diam1 / 2, centerY - diam2 / 2, diam1, diam2);
-    }
-
-    private static void fillRect(Graphics g, Rectangle rectangle)
-    {
-        g.fillRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
-    }
-
-    private void drawRobot(Graphics2D g, int x, int y, double direction)
-    {
-        int robotCenterX = round(gameModel.getRobotPositionX());
-        int robotCenterY = round(gameModel.getRobotPositionY());
-        AffineTransform t = AffineTransform.getRotateInstance(direction, robotCenterX, robotCenterY);
-        g.setTransform(t);
-        g.setColor(JBColor.MAGENTA);
-        fillOval(g, robotCenterX, robotCenterY, 30, 10);
-        g.setColor(JBColor.BLACK);
-        drawOval(g, robotCenterX, robotCenterY, 30, 10);
-        g.setColor(JBColor.WHITE);
-        fillOval(g, robotCenterX + 10, robotCenterY, 5, 5);
-        g.setColor(JBColor.BLACK);
-        drawOval(g, robotCenterX + 10, robotCenterY, 5, 5);
-    }
-
-    private void drawTarget(Graphics2D g, int x, int y)
-    {
-        AffineTransform t = AffineTransform.getRotateInstance(0, 0, 0);
-        g.setTransform(t);
-        g.setColor(JBColor.GREEN);
-        fillOval(g, x, y, 5, 5);
-        g.setColor(JBColor.BLACK);
-        drawOval(g, x, y, 5, 5);
-    }
-
-    private void drawObstacles(Graphics2D g)
-    {
-        g.setColor(JBColor.RED);
-        for (Obstacle obstacle : gameModel.getObstacles())
-        {
-            fillRect(g, obstacle.getRectangle());
+          gameModel.setBounds(getSize());
+          setTargetPosition(e.getPoint());
         }
+        else if (SwingUtilities.isRightMouseButton(e))
+          gameModel.AddObstacle(getSize());
+        repaint();
+      }
+    });
+    setDoubleBuffered(true);
+  }
+
+  protected void setTargetPosition(Point p)
+  {
+    gameModel.setTargetPosition(p);
+  }
+
+  protected void onRedrawEvent()
+  {
+    EventQueue.invokeLater(this::repaint);
+  }
+
+
+  private static int round(double value)
+  {
+    return (int) (value + 0.5);
+  }
+
+  @Override
+  public void paint(Graphics g)
+  {
+    super.paint(g);
+    Graphics2D g2d = (Graphics2D) g;
+    drawRobot(g2d, round(gameModel.getRobotPositionX()), round(gameModel.getRobotPositionY()), gameModel.getRobotDirection());
+    drawTarget(g2d, gameModel.getTargetPositionX(), gameModel.getTargetPositionY());
+    drawObstacles(g2d);
+  }
+
+  private static void fillOval(Graphics g, int centerX, int centerY, int diam1, int diam2)
+  {
+    g.fillOval(centerX - diam1 / 2, centerY - diam2 / 2, diam1, diam2);
+  }
+
+  private static void drawOval(Graphics g, int centerX, int centerY, int diam1, int diam2)
+  {
+    g.drawOval(centerX - diam1 / 2, centerY - diam2 / 2, diam1, diam2);
+  }
+
+  private static void fillRect(Graphics g, Rectangle rectangle)
+  {
+    g.fillRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+  }
+
+  private void drawRobot(Graphics2D g, int x, int y, double direction)
+  {
+    int robotCenterX = round(gameModel.getRobotPositionX());
+    int robotCenterY = round(gameModel.getRobotPositionY());
+    AffineTransform t = AffineTransform.getRotateInstance(direction, robotCenterX, robotCenterY);
+    g.setTransform(t);
+    g.setColor(JBColor.MAGENTA);
+    fillOval(g, robotCenterX, robotCenterY, 30, 10);
+    g.setColor(JBColor.BLACK);
+    drawOval(g, robotCenterX, robotCenterY, 30, 10);
+    g.setColor(JBColor.WHITE);
+    fillOval(g, robotCenterX + 10, robotCenterY, 5, 5);
+    g.setColor(JBColor.BLACK);
+    drawOval(g, robotCenterX + 10, robotCenterY, 5, 5);
+  }
+
+  private void drawTarget(Graphics2D g, int x, int y)
+  {
+    AffineTransform t = AffineTransform.getRotateInstance(0, 0, 0);
+    g.setTransform(t);
+    g.setColor(JBColor.GREEN);
+    fillOval(g, x, y, 5, 5);
+    g.setColor(JBColor.BLACK);
+    drawOval(g, x, y, 5, 5);
+  }
+
+  private void drawObstacles(Graphics2D g)
+  {
+    g.setColor(JBColor.RED);
+    for (Obstacle obstacle : gameModel.getObstacles())
+    {
+      fillRect(g, obstacle.getRectangle());
     }
+  }
 }

@@ -6,19 +6,19 @@ import java.util.ArrayList;
 
 public class FrameState implements Serializable
 {
-    private ArrayList<InternalFrameState> frames;
+  private ArrayList<InternalFrameState> frames;
 
-    public FrameState(MainApplicationFrame frame)
+  public FrameState(MainApplicationFrame frame)
+  {
+    frames=new ArrayList<>();
+    for (JInternalFrame internalFrame:frame.getAllFrames())
     {
-        frames=new ArrayList<>();
-        for (JInternalFrame internalFrame:frame.getAllFrames())
-        {
-            frames.add(new InternalFrameState(internalFrame));
-        }
+      frames.add(new InternalFrameState(internalFrame));
     }
+  }
 
-    public ArrayList<InternalFrameState> getFrames()
-    {
-        return frames;
-    }
+  public ArrayList<InternalFrameState> getFrames()
+  {
+    return frames;
+  }
 }
